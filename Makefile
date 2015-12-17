@@ -1,4 +1,4 @@
-TAG = 1.2
+TAG = 1.4
 PREFIX = antob/pg-backup
 
 all: build push

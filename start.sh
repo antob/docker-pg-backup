@@ -54,9 +54,8 @@ export PGDATABASE=$PGDATABASE
 export DUMPPREFIX=$DUMPPREFIX
  " > /pgenv.sh
 
-echo "Starting backup script."
+echo "[PGBACKUP] Starting backup script."
 #set | grep PG
 
-# Now launch cron in the foreground.
-
-cron -f
+# Now launch cron and rsyslogd. Tail logs in the foreground
+rsyslogd && cron && tail -fq /var/log/syslog /var/log/cron.log
