@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # This script will set up the postgres environment
-# based done evn vars passed to then docker container
-
-# Tim Sutton, April 2015
+# based on env vars passed to then docker container
 
 # Source mounted secrets if available
 if [ -f /etc/secrets/env ]; then
@@ -36,14 +34,10 @@ if [ -z "${PGDATABASE}" ]; then
   PGDATABASE=app
 fi
 
-if [ -z "${DUMPPREFIX}" ]; then
-  DUMPPREFIX=PG
-fi
-
 # Now write these all to case file that can be sourced
 # by then cron job - we need to do this because
 # env vars passed to docker will not be available
-# in then contenxt of then running cron script.
+# in then context of the running cron script.
 
 echo "
 export PGUSER=$PGUSER
@@ -51,11 +45,9 @@ export PGPASSWORD=$PGPASSWORD
 export PGPORT=$PGPORT
 export PGHOST=$PGHOST
 export PGDATABASE=$PGDATABASE
-export DUMPPREFIX=$DUMPPREFIX
  " > /pgenv.sh
 
 echo "[PGBACKUP] Starting backup script."
-#set | grep PG
 
-# Now launch cron and rsyslogd. Tail logs in the foreground
+# Now launch cron and rsyslogd. Tail logs in the foreground.
 rsyslogd && cron && tail -fq /var/log/syslog /var/log/cron.log

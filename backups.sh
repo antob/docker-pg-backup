@@ -2,9 +2,6 @@
 
 source /pgenv.sh
 
-#echo "Running with these environment options" >> /var/log/cron.log
-#set | grep PG >> /var/log/cron.log
-
 MYDATE=`date +%Y-%m-%d`
 MONTH=$(date +%m)
 YEAR=$(date +%Y)
@@ -24,14 +21,13 @@ if [ $? -ne 0 ]; then
     echo "[PGBACKUP] Error: Failed to get list of databases." >> /var/log/cron.log
 fi
 
-# echo "Databases to backup: ${DBLIST}" >> /var/log/cron.log
 for DB in ${DBLIST}
 do
   echo "[PGBACKUP] Backing up DB $DB"  >> /var/log/cron.log
-  FILENAME=${MYBACKUPDIR}/${DUMPPREFIX}_${DB}.${MYDATE}.dmp
-  pg_dump -i -Fc -f ${FILENAME} -x -O ${DB}
+  FILENAME=${MYBACKUPDIR}/${DB}.${MYDATE}.dmp
+  DUMP_OUTPUT="$(pg_dump -i -Fc -f ${FILENAME} -x -O ${DB} 2>&1)"
 
   if [ $? -ne 0 ]; then
-    echo "[PGBACKUP] Error: Failed to backup $DB" >> /var/log/cron.log
+    echo "[PGBACKUP] Error: Failed to backup $DB. Error was: $DUMP_OUTPUT" >> /var/log/cron.log
   fi
 done
